@@ -5,7 +5,7 @@ export = {
     /* don't expose password or any sensitive info, done only for demo */
     host: env.MASTER_DB_HOST || "localhost",
     user: env.MASTER_DB_USER || "root",
-    password: env.MASTER_DB_PASSWORD || "MYSQL100",
+    password: env.MASTER_DB_PASSWORD || "7699",
     database: env.MASTER_DB_NAME || "job-portal",
     timezone: "utc",
   },

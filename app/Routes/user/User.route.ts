@@ -29,7 +29,7 @@ router.get(
   userController.registerGoogleUser
 );
 
-/* routes for testing purpose : -
+// routes for testing purpose : -
 
 router.get("/logout", (req, res) => {
   req.logout((err: any) => {
@@ -44,5 +44,4 @@ router.get("/test-google-protected", (req, res) => {
   res.send({ valid: req.isAuthenticated() });
 });
 
-*/
 export default router;

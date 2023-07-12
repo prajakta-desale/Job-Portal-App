@@ -6,14 +6,14 @@ import constants from "../Constants";
 
 const login: IController = async (req: any, res: any) => {
   try {
-    console.log("Admin login data : ", req.body);
-    let admin: any = await UserService.userLogin(req.body);
-    console.log("Admin login data : ", admin);
-    if (admin instanceof Error) {
-      console.log("Controller Error : ", admin.message);
-      ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, admin.message);
+    console.log(" login data : ", req.body);
+    let user: any = await UserService.userLogin(req.body);
+    console.log("login data : ", user);
+    if (user instanceof Error) {
+      console.log("Controller Error : ", user.message);
+      ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, user.message);
     } else {
-      ApiResponse.result(res, admin, httpStatusCodes.CREATED);
+      ApiResponse.result(res, user, httpStatusCodes.CREATED);
     }
   } catch (error) {
     console.log("Controller Error : ", error);

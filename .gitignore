@@ -9,3 +9,5 @@ combined.log
 error.log
 
 .env
+.vscode/
+.idea/
