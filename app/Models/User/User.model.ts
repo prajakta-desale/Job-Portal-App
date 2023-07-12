@@ -46,4 +46,12 @@ export class UserModel extends baseModel {
       [id]
     );
   }
+
+  async createUserProfile(userData: any) {
+    const result = await this._executeQuery("insert into user_profile set ?", [
+      userData,
+    ]);
+    console.log("in model----->", result);
+    return result;
+  }
 }

@@ -5,15 +5,12 @@ import { celebrate } from "celebrate";
 import UserSchema from "../../Constants/Schema/User.schema";
 import passport from "passport";
 
+// user registration and login
 const router = express.Router();
-router.post(
-  "/sign-in",
-  // celebrate(UserSchema.login),
-  userController.login
-);
+router.post("/sign-in", celebrate(UserSchema.login), userController.login);
 router.post(
   "/register",
-  // celebrate(UserSchema.register),
+  celebrate(UserSchema.register),
   userController.register
 );
 
@@ -44,4 +41,6 @@ router.get("/test-google-protected", (req, res) => {
   res.send({ valid: req.isAuthenticated() });
 });
 
+// user profile
+router.post("/profile", userController.createUserProfile);
 export default router;

@@ -1,5 +1,8 @@
 import { UserModel } from "../Models/User/User.model";
 import Encryption from "../utilities/Encryption";
+import formidable from "formidable";
+import fs from "fs";
+import path from "path";
 
 const userLogin = async (data: any) => {
   try {
@@ -50,17 +53,16 @@ const createUser = async (data: any) => {
       default:
         return { error: "Invalid role" };
     }
-    // console.log("in service-------------->", data.role);
     const role_id = await new UserModel().getUserRole(data.role);
     // console.log("in service-------------->", role_id);
-    if (data.password !== data.confirm_password)
-      throw new Error("password did not match");
+    // if (data.password !== data.confirm_password)
+    //   throw new Error("password did not match");
     let hash = await new Encryption().generateHash(data.password, 10);
     data.password = hash;
-    delete data.confirm_password;
+    // delete data.confirm_password;
     delete data.role;
     data.role_id = role_id[0].id;
-    // console.log("in service------------->", data);
+    console.log("in service------------->", data);
     let user = await new UserModel().createUser(data, tableName);
     return user;
   } catch (error: any) {
@@ -96,8 +98,32 @@ const UserAccessManager = async (data: any) => {
     return error;
   }
 };
+
+const userProfile = async (req: any) => {
+  let fields,
+    files,
+    data: any = {};
+  try {
+    // @ts-ignore
+    ({ fields, files } = await new Promise((resolve) => {
+      new formidable.IncomingForm().parse(
+        req,
+        async (err: any, fields: any, files: any) => {
+          resolve({ fields: fields, files: files });
+        }
+      );
+    }));
+    console.log("in service files------->", files);
+    let result = await new UserModel().createUserProfile(data);
+    return result;
+  } catch (error: any) {
+    console.log("error in service---------->", error.message);
+    throw error;
+  }
+};
 export default {
   userLogin,
   createUser,
   UserAccessManager,
+  userProfile,
 };

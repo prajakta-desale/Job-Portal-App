@@ -30,7 +30,7 @@ app.use(function (req, res, next) {
   next();
 });
 require("dotenv").config();
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(Authenticate);
@@ -50,6 +50,7 @@ passport.serializeUser(function (user: any, done: any) {
     done(null, user);
   });
 passport.use(passportService);
+app.use(cors());
 // Router
 app.use(indexRoute);
 // destination to upload file

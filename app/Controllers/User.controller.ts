@@ -24,6 +24,7 @@ const login: IController = async (req: any, res: any) => {
 const register: IController = async (req: any, res: any) => {
   let user;
   try {
+    console.log("user registration controller", req.body);
     user = await UserService.createUser(req.body);
   } catch (e: any) {
     console.log(e.message);
@@ -69,9 +70,32 @@ const registerGoogleUser: IController = async (req: any, res: any) => {
     ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
   }
 };
+const createUserProfile: IController = async (req, res) => {
+  let user;
+  try {
+    user = await UserService.userProfile(req);
+  } catch (e) {
+    console.log(e);
+    // @ts-ignore
+    if (e.code === constants.ErrorCodes.DUPLICATE_ENTRY) {
+      ApiResponse.error(
+        res,
+        httpStatusCodes.BAD_REQUEST,
+        "EMAIL_ALREADY_EXISTS"
+      );
+      return;
+    }
+  }
+  if (user) {
+    ApiResponse.result(res, user, httpStatusCodes.CREATED);
+  } else {
+    ApiResponse.error(res, httpStatusCodes.BAD_REQUEST);
+  }
+};
 
 export default {
   login,
   register,
   registerGoogleUser,
+  createUserProfile,
 };
