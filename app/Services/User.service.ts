@@ -7,6 +7,7 @@ import path from "path";
 const userLogin = async (data: any) => {
   try {
     let result = await new UserModel().getUser(data);
+    console.log("user login service---------->", result);
     if (result.length === 0) throw new Error("Invalid email or password");
     const match = await new Encryption().verifypassword(
       data.password,
@@ -29,7 +30,10 @@ const userLogin = async (data: any) => {
     }
     delete result[0].role_id;
     return {
-      token: await Encryption.generateJwtToken({ id: result[0].id }),
+      token: await Encryption.generateJwtToken({
+        id: result[0].id,
+        role: result[0].role,
+      }),
       user: result,
     };
   } catch (error: any) {
@@ -39,22 +43,9 @@ const userLogin = async (data: any) => {
 };
 const createUser = async (data: any) => {
   try {
-    let tableName;
-    switch (data.role) {
-      case "jobProvider":
-        tableName = "user";
-        break;
-      case "admin":
-        tableName = "user";
-        break;
-      case "jobSeeker":
-        tableName = "user";
-        break;
-      default:
-        return { error: "Invalid role" };
-    }
-    const role_id = await new UserModel().getUserRole(data.role);
+    let role_id = await new UserModel().getUserRole(data.role);
     // console.log("in service-------------->", role_id);
+    if (role_id.length === 0) throw new Error("invalid role");
     // if (data.password !== data.confirm_password)
     //   throw new Error("password did not match");
     let hash = await new Encryption().generateHash(data.password, 10);
@@ -62,8 +53,7 @@ const createUser = async (data: any) => {
     // delete data.confirm_password;
     delete data.role;
     data.role_id = role_id[0].id;
-    console.log("in service------------->", data);
-    let user = await new UserModel().createUser(data, tableName);
+    let user = await new UserModel().createUser(data);
     return user;
   } catch (error: any) {
     throw error;
@@ -113,13 +103,44 @@ const userProfile = async (req: any) => {
         }
       );
     }));
-    console.log("in service files------->", files);
+    if (!files?.profile_image) throw new Error("image is required");
+    else {
+      if (fileNotValid(files.profile_image.mimetype))
+        throw new Error(
+          "Only .png, .jpg , .jpeg and .pdf format allowed! for image"
+        );
+      var file = files.profile_image;
+    }
+    const oldPath = file.filepath;
+    const uniqueFileName = `public/${file.originalFilename}-${Date.now()}`;
+    const newPath = path.join(uniqueFileName);
+    data.profile_image = newPath;
+    //@ts-ignore
+    fs.rename(oldPath, newPath, (err) => {
+      if (err) {
+        // Handle the error
+        console.log("error while uploading file");
+        return;
+      }
+      console.log("file uploaded successfully");
+    });
     let result = await new UserModel().createUserProfile(data);
     return result;
   } catch (error: any) {
-    console.log("error in service---------->", error.message);
     throw error;
   }
+};
+
+const fileNotValid = (type: any) => {
+  if (
+    type == "image/jpeg" ||
+    type == "image/jpg" ||
+    type == "image/png" ||
+    type == "image/pdf"
+  ) {
+    return false;
+  }
+  return true;
 };
 export default {
   userLogin,

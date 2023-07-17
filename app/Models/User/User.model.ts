@@ -18,7 +18,9 @@ export class UserModel extends baseModel {
     return result;
   }
 
-  async createUser(userData: any, tableName: string) {
+  async createUser(userData: any) {
+    let tableName = "user";
+    console.log("in model ------------->", tableName, userData);
     let registerResult = await this._executeQuery(
       `INSERT INTO ${tableName} SET ?`,
       [userData]

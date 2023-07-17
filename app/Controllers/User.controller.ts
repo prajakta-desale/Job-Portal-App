@@ -70,21 +70,25 @@ const registerGoogleUser: IController = async (req: any, res: any) => {
     ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
   }
 };
-const createUserProfile: IController = async (req, res) => {
+const createUserProfile: IController = async (req: any, res: any) => {
   let user;
   try {
+    console.log("user profile controller", req.body);
     user = await UserService.userProfile(req);
-  } catch (e) {
-    console.log(e);
+  } catch (e: any) {
+    console.log(e.message);
+    throw e;
     // @ts-ignore
-    if (e.code === constants.ErrorCodes.DUPLICATE_ENTRY) {
-      ApiResponse.error(
-        res,
-        httpStatusCodes.BAD_REQUEST,
-        "EMAIL_ALREADY_EXISTS"
-      );
-      return;
-    }
+    // if (e.code === constants.ErrorCodes.DUPLICATE_ENTRY) {
+    //   ApiResponse.error(
+    //     res,
+    //     httpStatusCodes.BAD_REQUEST,
+    //     "MOBILE_AND_EMAIL_ALREADY_EXISTS"
+    //   );
+    // } else {
+    //   ApiResponse.error(res, httpStatusCodes.BAD_REQUEST, e.message);
+    // }
+    return;
   }
   if (user) {
     ApiResponse.result(res, user, httpStatusCodes.CREATED);
