@@ -7,7 +7,7 @@ import path from "path";
 const userLogin = async (data: any) => {
   try {
     let result = await new UserModel().getUser(data);
-    console.log("user login service---------->", result);
+    // console.log("user login service---------->", result);
     if (result.length === 0) throw new Error("Invalid email or password");
     const match = await new Encryption().verifypassword(
       data.password,
@@ -103,6 +103,7 @@ const userProfile = async (req: any) => {
         }
       );
     }));
+    console.log("files in service--------->", files.profile_image);
     if (!files?.profile_image) throw new Error("image is required");
     else {
       if (fileNotValid(files.profile_image.mimetype))
@@ -124,6 +125,31 @@ const userProfile = async (req: any) => {
       }
       console.log("file uploaded successfully");
     });
+    if (!fields.first_name) throw new Error(" first name is required");
+    data.first_name = fields.first_name;
+    if (!fields.last_name) throw new Error("last name is required");
+    data.last_name = fields.last_name;
+    if (!fields.mobile) throw new Error(" mobile no  is required");
+    data.mobile = fields.mobile;
+    if (!fields.email) throw new Error("email  is required");
+    data.email = fields.email;
+    if (!fields.birth_date) throw new Error("birth_date is required");
+    data.DOB = fields.birth_date;
+    if (!fields.gender) throw new Error("gender is required");
+    data.Gender = fields.gender;
+    if (!fields.age) throw new Error(" age is required");
+    data.age = fields.age;
+    if (!fields.area) throw new Error("area is required");
+    data.area = fields.area;
+    if (!fields.city) throw new Error("city is required");
+    data.city = fields.city;
+    if (!fields.state) throw new Error("state is required");
+    data.state = fields.state;
+    if (!fields.country) throw new Error(" country  is required");
+    data.country = fields.country;
+    let user = await new UserModel().getUserId();
+    data.user_id = user[0].id;
+    console.log("user profile service------------->", data);
     let result = await new UserModel().createUserProfile(data);
     return result;
   } catch (error: any) {

@@ -4,7 +4,7 @@ import apiResponse from "../utilities/ApiResponse";
 import Encryption from "../utilities/Encryption";
 import { extractCookieFromRequest } from "../utilities/ApiUtilities";
 import application from "../Constants/application";
-
+import { UserModel } from "../Models/User/User.model";
 /**
  * Route authentication middleware to verify a token
  *
@@ -29,6 +29,8 @@ export default async (
       // @ts-ignore
       if (decoded) {
         req.user = decoded.id;
+        let user = await new UserModel().getUserById(req.user);
+        if (!user) throw new Error("user not found");
         console.log("Token Verified Successfully");
       } else {
         apiResponse.error(res, httpStatusCodes.UNAUTHORIZED);
